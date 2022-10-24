@@ -4,7 +4,7 @@
 
 from typing import Sequence, Type
 
-from ..environment import LocationID, PersonRoutine, HairSalon, Restaurant, Bar, \
+from ..environment import LocationID, PersonRoutine, HairSalon, Restaurant, Bar, Transport, \
     GroceryStore, RetailStore, triggered_routine, weekend_routine, social_routine, mid_day_during_week_routine, \
     PersonRoutineAssignment, Person, Retired, Minor, Worker, Location
 
@@ -58,6 +58,7 @@ class DefaultPersonRoutineAssignment(PersonRoutineAssignment):
     @staticmethod
     def get_worker_outside_work_routines(home_id: LocationID) -> Sequence[PersonRoutine]:
         routines = [
+            triggered_routine(None, Transport, 1),
             triggered_routine(None, GroceryStore, 7),
             triggered_routine(None, RetailStore, 7),
             triggered_routine(None, HairSalon, 30),
