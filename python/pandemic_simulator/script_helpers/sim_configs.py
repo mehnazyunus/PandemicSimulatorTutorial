@@ -1,7 +1,7 @@
 # Confidential, Copyright 2020, Sony Corporation of America, All rights reserved.
 
 from .person_routines import DefaultPersonRoutineAssignment
-from ..environment import Home, GroceryStore, Office, School, Hospital, RetailStore, HairSalon, Restaurant, Bar, \
+from ..environment import Home, GroceryStore, Office, School, Hospital, RetailStore, HairSalon, Restaurant, Bar, Transport, \
     PandemicSimConfig, LocationConfig
 
 __all__ = ['town_config', 'small_town_config', 'test_config',
@@ -72,6 +72,7 @@ small_town_config = PandemicSimConfig(
         LocationConfig(HairSalon, num=4, num_assignees=3, state_opts=dict(visitor_capacity=5)),
         LocationConfig(Restaurant, num=2, num_assignees=6, state_opts=dict(visitor_capacity=30)),
         LocationConfig(Bar, num=2, num_assignees=5, state_opts=dict(visitor_capacity=30)),
+        LocationConfig(Transport, num=1, num_assignees=2, state_opts=dict(visitor_capacity=30)),
     ],
     person_routine_assignment=DefaultPersonRoutineAssignment())
 
