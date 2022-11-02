@@ -4,8 +4,8 @@
 
 from typing import Sequence, Type
 
-from ..environment import LocationID, PersonRoutine, HairSalon, Restaurant, Bar, Transport, \
-    GroceryStore, RetailStore, triggered_routine, weekend_routine, social_routine, mid_day_during_week_routine, \
+from ..environment import LocationID, PersonRoutine, HairSalon, Restaurant, Bar, Transport, Office, \
+    GroceryStore, RetailStore, triggered_routine, weekend_routine, social_routine, mid_day_during_week_routine, to_transport_routine, from_transport_routine,\
     PersonRoutineAssignment, Person, Retired, Minor, Worker, Location
 
 __all__ = ['DefaultPersonRoutineAssignment']
@@ -56,9 +56,28 @@ class DefaultPersonRoutineAssignment(PersonRoutineAssignment):
         return routines
 
     @staticmethod
+    def get_worker_before_work_routines(home_id: LocationID, work_id: LocationID) -> Sequence[PersonRoutine]:
+        routines = [
+            # triggered_routine(home_id, Transport, 1),
+            # triggered_routine(Transport, Office, 1),
+            to_transport_routine(home_id),
+            from_transport_routine(work_id)
+
+        ]
+        return routines
+
+    @staticmethod
+    def get_worker_after_work_routines(home_id: LocationID, work_id: LocationID) -> Sequence[PersonRoutine]:
+        routines = [
+            to_transport_routine(work_id),
+            from_transport_routine(home_id)
+        ]
+        return routines
+
+    @staticmethod
     def get_worker_outside_work_routines(home_id: LocationID) -> Sequence[PersonRoutine]:
         routines = [
-            triggered_routine(None, Transport, 1),
+            # triggered_routine(None, Transport, 1),
             triggered_routine(None, GroceryStore, 7),
             triggered_routine(None, RetailStore, 7),
             triggered_routine(None, HairSalon, 30),
@@ -77,3 +96,6 @@ class DefaultPersonRoutineAssignment(PersonRoutineAssignment):
             elif isinstance(p, Worker):
                 p.set_during_work_routines(self.get_worker_during_work_routines(p.work))
                 p.set_outside_work_routines(self.get_worker_outside_work_routines(p.home))
+                p.set_before_work_routines(self.get_worker_before_work_routines(p.home, p.work))
+                p.set_after_work_routines(self.get_worker_after_work_routines(p.home, p.work))
+

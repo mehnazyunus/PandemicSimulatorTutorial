@@ -4,8 +4,10 @@ from typing import Sequence, Optional, cast, Type, Tuple
 from .base import BasePerson
 from ..interfaces import PersonRoutineWithStatus, NoOP, NOOP, LocationID, SpecialEndLoc, globals, PersonRoutine, \
     SimTimeTuple, SimTimeRoutineTrigger, RoutineTrigger
+from ..location import Transport
 
-__all__ = ['execute_routines', 'triggered_routine', 'weekend_routine', 'mid_day_during_week_routine', 'social_routine']
+__all__ = ['execute_routines', 'triggered_routine', 'weekend_routine', 'mid_day_during_week_routine',
+           'social_routine', 'to_transport_routine', 'from_transport_routine']
 
 
 def execute_routines(person: BasePerson, routines_with_status: Sequence[PersonRoutineWithStatus]) -> Optional[NoOP]:
@@ -90,6 +92,24 @@ def triggered_routine(start_loc: Optional[LocationID],
                                                              offset_day=globals.numpy_rng.randint(0, interval_in_days)),
                          explorable_end_locs=explorable_end_locs,
                          explore_probability=explore_probability)
+
+
+def to_transport_routine(start_loc: LocationID) -> PersonRoutine:
+    end_loc, explorable_end_locs = _get_locations_from_type(Transport)
+    return PersonRoutine(start_loc=start_loc,
+                         end_loc=end_loc, valid_time=SimTimeTuple(
+                             hours=tuple([8, 17]), week_days=tuple(range(0, 5))),
+                         explorable_end_locs=explorable_end_locs,
+                         explore_probability=1)
+
+
+def from_transport_routine(end_loc: LocationID) -> PersonRoutine:
+    start_loc, explorable_end_locs = _get_locations_from_type(Transport)
+    return PersonRoutine(start_loc=start_loc,
+                         end_loc=end_loc,
+                         valid_time=SimTimeTuple(hours=tuple([8, 17]), week_days=tuple(range(0, 5))),
+                         explorable_end_locs=explorable_end_locs,
+                         explore_probability=1)
 
 
 def weekend_routine(start_loc: Optional[LocationID],
