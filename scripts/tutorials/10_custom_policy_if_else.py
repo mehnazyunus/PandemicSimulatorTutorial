@@ -20,7 +20,7 @@ def run_pandemic_gym_env() -> None:
 
     # make env
 
-    wrap = ps.env.PandemicGymEnv.from_config(sim_config = sim_config, pandemic_regulations=ps.sh.austin_regulations)
+    wrap = ps.env.PandemicGymEnv.from_config(sim_config=sim_config, pandemic_regulations=ps.sh.austin_regulations)
 
     # setup viz
     viz = ps.viz.GymViz.from_config(sim_config=sim_config)
@@ -30,31 +30,47 @@ def run_pandemic_gym_env() -> None:
     wrap.reset()
     Reward = 0
     for i in trange(120, desc='Simulating day'):
-        
-        
-        if i==0:
-            action = 0 
+
+        if i == 0:
+            action = 0
 
         else:
-            if i%10==0:
-                viz.plot()
-                sim_viz.plot()
-                
-            #######################################################################################################################################            
-            #Replace the code in the below if-else statement with your own policy, based on observation variables
-            if obs.time_day[...,0]>20:
+            # if i%10==0:
+            #     viz.plot()
+            #     sim_viz.plot()
+
+            #######################################################################################################################################
+            # #Replace the code in the below if-else statement with your own policy, based on observation variables
+            # if obs.time_day[...,0]>20:
+            #     action = 1
+            # elif not obs.infection_above_threshold:
+            #     action = 0
+            # else:
+            #     action = 4
+
+            # Number of people in Infected condition according to current testing policy
+            if obs.global_testing_summary[..., 2] > 400:
+                action = 4
+            elif obs.global_testing_summary[..., 2] > 200:
+                action = 3
+            elif obs.global_testing_summary[..., 2] > 100:
+                action = 2
+            elif obs.global_testing_summary[..., 2] > 50:
                 action = 1
+            # Number of people in Infected condition according to current testing policy
+           
+            # Number of people in Infected condition according to current testing policy            
+            
             elif not obs.infection_above_threshold:
                 action = 0
-            else:
-                action = 4
             ########################################################################################################################################
 
-        obs, reward, done, aux = wrap.step(action=int(action))  # here the action is the discrete regulation stage identifier
-        print(obs)
+        # here the action is the discrete regulation stage identifier
+        obs, reward, done, aux = wrap.step(action=int(action))
+        # print(obs)
         Reward += reward
         viz.record((obs, reward))
-        sim_viz.record_state(state = wrap.pandemic_sim.state)
+        sim_viz.record_state(state=wrap.pandemic_sim.state)
     # generate plots
     viz.plot()
     sim_viz.plot()
@@ -63,4 +79,3 @@ def run_pandemic_gym_env() -> None:
 
 if __name__ == '__main__':
     run_pandemic_gym_env()
-
