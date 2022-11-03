@@ -82,7 +82,6 @@ class BaseMatplotLibViz(PandemicViz):
             self._gis_legend = list(obs.infection_summary_labels)
             self._critical_index = self._gis_legend.index(InfectionSummary.CRITICAL.value)
 
-
         self._gis.append(obs.global_infection_summary)
         self._gis_0.append(obs.global_infection_summary_0)
         self._gis_1.append(obs.global_infection_summary_1)
@@ -105,14 +104,36 @@ class BaseMatplotLibViz(PandemicViz):
     def plot_gis(self, ax: Optional[Axes] = None, **kwargs: Any) -> None:
         ax = ax or plt.gca()
         gis = np.vstack(self._gis).squeeze()
-        gis_0 = np.vstack(self._gis_0).squeeze()
-        gis_1 = np.vstack(self._gis_1).squeeze()
+        # gis_0 = np.vstack(self._gis_0).squeeze()
+        # gis_1 = np.vstack(self._gis_1).squeeze()
         ax.plot(gis)
-        ax.plot(gis_0)
-        ax.plot(gis_1)
+        # ax.plot(gis_0)
+        # ax.plot(gis_1)
         ax.legend(self._gis_legend, loc=1)
         ax.set_ylim(-0.1, self._num_persons + 1)
         ax.set_title('Global Infection Summary')
+        ax.set_xlabel('time (days)')
+        ax.set_ylabel('persons')
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+
+    def plot_gis_0(self, ax: Optional[Axes] = None, **kwargs: Any) -> None:
+        ax = ax or plt.gca()
+        gis_0 = np.vstack(self._gis_0).squeeze()
+        ax.plot(gis_0)
+        ax.legend(self._gis_legend, loc=1)
+        ax.set_ylim(-0.1, self._num_persons + 1)
+        ax.set_title('Global Infection Summary 0')
+        ax.set_xlabel('time (days)')
+        ax.set_ylabel('persons')
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+
+    def plot_gis_1(self, ax: Optional[Axes] = None, **kwargs: Any) -> None:
+        ax = ax or plt.gca()
+        gis_1 = np.vstack(self._gis_1).squeeze()
+        ax.plot(gis_1)
+        ax.legend(self._gis_legend, loc=1)
+        ax.set_ylim(-0.1, self._num_persons + 1)
+        ax.set_title('Global Infection Summary 1')
         ax.set_xlabel('time (days)')
         ax.set_ylabel('persons')
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))

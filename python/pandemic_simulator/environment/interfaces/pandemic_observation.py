@@ -69,6 +69,10 @@ class PandemicObservation:
 
         gis = np.asarray([sim_state.global_infection_summary[k] for k in sorted_infection_summary])[None, None, ...]
         self.global_infection_summary[hist_index, 0] = gis
+        gis_0 = np.asarray([sim_state.global_infection_summary_0[k] for k in sorted_infection_summary])[None, None, ...]
+        self.global_infection_summary_0[hist_index, 0] = gis_0
+        gis_1 = np.asarray([sim_state.global_infection_summary_1[k] for k in sorted_infection_summary])[None, None, ...]
+        self.global_infection_summary_1[hist_index, 0] = gis_1
 
         gts = np.asarray([sim_state.global_testing_state.summary[k] for k in sorted_infection_summary])[None, None, ...]
         self.global_testing_summary[hist_index, 0] = gts

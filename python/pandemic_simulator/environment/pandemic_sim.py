@@ -270,7 +270,7 @@ class PandemicSim:
         """Method that advances one step through the simulator"""
         # sync all locations
         #print("inside step")
-        #print(self._state.global_infection_summary)
+        # print(self._state.global_infection_summary)
         for location in self._id_to_location.values():
             location.sync(self._state.sim_time)
         self._registry.update_location_specific_information()
@@ -293,7 +293,7 @@ class PandemicSim:
             global_infection_summary = {s: 0 for s in sorted_infection_summary}
             global_infection_summary_0 = {s: 0 for s in sorted_infection_summary}
             global_infection_summary_1 = {s: 0 for s in sorted_infection_summary}
-            #print(global_infection_summary)
+            # print(global_infection_summary)
             for person in self._id_to_person.values():
                 #print("person attributes = ", vars(person))
                 # infection model step
@@ -327,6 +327,9 @@ class PandemicSim:
                     person.state.test_result = new_test_result
 
             self._state.global_infection_summary = global_infection_summary
+            self._state.global_infection_summary_0 = global_infection_summary_0
+            self._state.global_infection_summary_1 = global_infection_summary_1
+
         self._state.infection_above_threshold = (self._state.global_testing_state.summary[InfectionSummary.INFECTED]
                                                  >= self._infection_threshold)
 
@@ -412,6 +415,8 @@ class PandemicSim:
             location_type_infection_summary={type(location): 0 for location in self._id_to_location.values()},
 
             global_infection_summary={s: 0 for s in sorted_infection_summary},
+            global_infection_summary_0={s: 0 for s in sorted_infection_summary},
+            global_infection_summary_1={s: 0 for s in sorted_infection_summary},
             global_location_summary=self._registry.global_location_summary,
             global_testing_state=GlobalTestingState(summary={s: num_persons if s == InfectionSummary.NONE else 0
                                                              for s in sorted_infection_summary},
@@ -420,70 +425,3 @@ class PandemicSim:
             regulation_stage=0,
             infection_above_threshold=False,
         )
-
-    # modifications
-    #
-    # def calculate_state_classwise_0(self, state_i, i):
-    #     """Method that aggregates data from the simulator classwise"""
-    #     # # sync all locations
-    #     # for location in self._id_to_location.values():
-    #     #     location.sync(self._state.sim_time)
-    #     # self._registry.update_location_specific_information()
-    #
-    #     # call person steps (randomize order)
-    #     # for i in self._numpy_rng.randint(0, len(self._persons), len(self._persons)):
-    #     #     self._persons[i].step(self._state.sim_time, self._contact_tracer)
-    #
-    #     # update person contacts
-    #     # for location in self._id_to_location.values():
-    #     #     contacts = self._compute_contacts(location)
-    #     #
-    #     #     if self._contact_tracer:
-    #     #         self._contact_tracer.add_contacts(contacts)
-    #     #
-    #     #     self._compute_infection_probabilities(contacts)
-    #
-    #     # call infection model steps
-    #     #if self._infection_update_interval.trigger_at_interval(self._state.sim_time):
-    #         #initialization
-    #         global_infection_summary = {s: 0 for s in sorted_infection_summary}
-    #
-    #         for person in self._id_to_person.values():
-    #             if person.social_class == i:
-    #             # # infection model step
-    #             # person.state.infection_state = self._infection_model.step(person.state.infection_state,
-    #             #                                                           person.id.age,
-    #             #                                                           person.state.risk,
-    #             #                                                           1 - person.state.not_infection_probability)
-    #             #
-    #                 if person.state.infection_state.exposed_rnb != -1.:
-    #                     for vals in person.state.not_infection_probability_history:
-    #                         if person.state.infection_state.exposed_rnb < 1 - vals[1]:
-    #                             infection_location = vals[0]
-    #                             break
-    #
-    #                     person_location_type = self._registry.location_id_to_type(infection_location)
-    #                     self._state.location_type_infection_summary[person_location_type] += 1
-    #             #if person.social_class == 0:
-    #                 global_infection_summary[person.state.infection_state.summary] += 1
-    #             # person.state.not_infection_probability = 1.
-    #             # person.state.not_infection_probability_history = []
-    #
-    #             # test the person for infection
-    #             # if self._pandemic_testing.admit_person(person.state):
-    #             #     new_test_result = self._pandemic_testing.test_person(person.state)
-    #             #     self._update_global_testing_state(new_test_result, person.state.test_result)
-    #             #     person.state.test_result = new_test_result
-    #
-    #         state_i.global_infection_summary = global_infection_summary
-    #     # self._state.infection_above_threshold = (self._state.global_testing_state.summary[InfectionSummary.INFECTED]
-    #     #                                          >= self._infection_threshold)
-    #     #
-    #     self._state.global_location_summary = self._registry.global_location_summary
-    #
-    #     if self._contact_tracer and self._new_time_slot_interval.trigger_at_interval(self._state.sim_time):
-    #         self._contact_tracer.new_time_slot()
-    #
-    #     # call sim time step
-    #     self._state.sim_time.step()
-    #     """
