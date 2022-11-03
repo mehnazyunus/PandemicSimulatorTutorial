@@ -18,6 +18,8 @@ class PandemicObservation:
     used by the reinforcement learning interface."""
 
     global_infection_summary: np.ndarray
+    global_infection_summary_0: np.ndarray
+    global_infection_summary_1: np.ndarray
     global_testing_summary: np.ndarray
     stage: np.ndarray
     infection_above_threshold: np.ndarray
@@ -37,6 +39,8 @@ class PandemicObservation:
         :return: an empty PandemicObservation instance
         """
         return PandemicObservation(global_infection_summary=np.zeros((history_size, 1, len(InfectionSummary))),
+                                    global_infection_summary_0=np.zeros((history_size, 1, len(InfectionSummary))),
+                                    global_infection_summary_1=np.zeros((history_size, 1, len(InfectionSummary))),
                                    global_testing_summary=np.zeros((history_size, 1, len(InfectionSummary))),
                                    stage=np.zeros((history_size, 1, 1)),
                                    infection_above_threshold=np.zeros((history_size, 1, 1)),

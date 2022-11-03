@@ -25,7 +25,7 @@ def run_pandemic_sim() -> None:
     sim.impose_regulation(regulation=ps.sh.austin_regulations[0])  # stage 0
 
     # run regulation steps in the simulator
-    for _ in trange(100, desc='Simulating day'):
+    for _ in trange(50, desc='Simulating day'):
         sim.step_day()
         viz.record(sim.state)
 

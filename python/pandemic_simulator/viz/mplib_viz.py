@@ -42,6 +42,8 @@ class BaseMatplotLibViz(PandemicViz):
     _ax_i: int
 
     _gis: List[np.ndarray]
+    _gis0: List[np.ndarray]
+    _gis1: List[np.ndarray]
     _gts: List[np.ndarray]
     _stages: List[np.ndarray]
     _rewards: List[float]
@@ -62,6 +64,8 @@ class BaseMatplotLibViz(PandemicViz):
         self._ax_i = 0
 
         self._gis = []
+        self._gis_0 = []
+        self._gis_1 = []
         self._gts = []
         self._stages = []
 
@@ -78,7 +82,10 @@ class BaseMatplotLibViz(PandemicViz):
             self._gis_legend = list(obs.infection_summary_labels)
             self._critical_index = self._gis_legend.index(InfectionSummary.CRITICAL.value)
 
+
         self._gis.append(obs.global_infection_summary)
+        self._gis_0.append(obs.global_infection_summary_0)
+        self._gis_1.append(obs.global_infection_summary_1)
         self._gts.append(obs.global_testing_summary)
         self._stages.append(obs.stage)
 
@@ -98,7 +105,11 @@ class BaseMatplotLibViz(PandemicViz):
     def plot_gis(self, ax: Optional[Axes] = None, **kwargs: Any) -> None:
         ax = ax or plt.gca()
         gis = np.vstack(self._gis).squeeze()
+        gis_0 = np.vstack(self._gis_0).squeeze()
+        gis_1 = np.vstack(self._gis_1).squeeze()
         ax.plot(gis)
+        ax.plot(gis_0)
+        ax.plot(gis_1)
         ax.legend(self._gis_legend, loc=1)
         ax.set_ylim(-0.1, self._num_persons + 1)
         ax.set_title('Global Infection Summary')

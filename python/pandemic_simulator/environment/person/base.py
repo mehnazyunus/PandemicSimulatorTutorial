@@ -6,7 +6,7 @@ from typing import Optional, List, Sequence, cast
 import numpy as np
 
 from ..interfaces import Person, PersonID, PersonState, LocationID, Risk, Registry, PandemicRegulation, \
-    SimTime, NoOP, NOOP, SimTimeTuple, PandemicTestResult, ContactTracer, globals
+    SimTime, NoOP, NOOP, SimTimeTuple, PandemicTestResult, ContactTracer, globals, SocialClass
 from ..location import Cemetery, Hospital
 
 __all__ = ['BasePerson']
@@ -21,7 +21,7 @@ class BasePerson(Person):
     _night_hours: SimTimeTuple
     _init_state: PersonState
     _numpy_rng: np.random.RandomState
-
+    _social_class: SocialClass
     _state: PersonState
     _cemetery_ids: List[LocationID]
     _hospital_ids: List[LocationID]
@@ -32,6 +32,7 @@ class BasePerson(Person):
     def __init__(self,
                  person_id: PersonID,
                  home: LocationID,
+                 social_class: SocialClass,
                  regulation_compliance_prob: float = 1.0,
                  init_state: Optional[PersonState] = None):
         """
@@ -46,6 +47,7 @@ class BasePerson(Person):
 
         self._id = person_id
         self._home = home
+        self._social_class = social_class
         self._regulation_compliance_prob = regulation_compliance_prob
         self._init_state = init_state or PersonState(infection_state=None,
                                                      current_location=home,
