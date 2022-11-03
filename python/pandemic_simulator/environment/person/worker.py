@@ -14,10 +14,14 @@ class Worker(BasePerson):
 
     _work: LocationID
     _work_time: SimTimeTuple
+    _before_work_time: SimTimeTuple
+    _after_work_time: SimTimeTuple
 
     _routines: List[PersonRoutine]
     _during_work_rs: List[PersonRoutineWithStatus]
     _outside_work_rs: List[PersonRoutineWithStatus]
+    _before_work_rs: List[PersonRoutineWithStatus]
+    _after_work_rs: List[PersonRoutineWithStatus]
 
     def __init__(self,
                  person_id: PersonID,
@@ -38,10 +42,14 @@ class Worker(BasePerson):
         assert person_id.age >= 18, "Workers's age must be >= 18"
         self._work = work
         self._work_time = work_time or SimTimeTuple(hours=tuple(range(9, 18)), week_days=tuple(range(0, 5)))
+        self._before_work_time = SimTimeTuple(hours=tuple(range(8, 9)), week_days=tuple(range(0, 5)))
+        self._after_work_time = SimTimeTuple(hours=tuple(range(17, 18)), week_days=tuple(range(0, 5)))
 
         self._routines = []
         self._during_work_rs = []
         self._outside_work_rs = []
+        self._before_work_rs = []
+        self._after_work_rs = []
 
         super().__init__(person_id=person_id,
                          home=home,
@@ -76,10 +84,25 @@ class Worker(BasePerson):
                 self._routines.append(routine)
                 self._outside_work_rs.append(PersonRoutineWithStatus(routine))
 
+    def set_before_work_routines(self, routines: Sequence[PersonRoutine]) -> None:
+        """A sequence of person routines to run before work time"""
+        for routine in routines:
+            if routine not in self._routines:
+                self._routines.append(routine)
+                self._before_work_rs.append(PersonRoutineWithStatus(routine))
+
+    def set_after_work_routines(self, routines: Sequence[PersonRoutine]) -> None:
+        """A sequence of person routines to run before work time"""
+        for routine in routines:
+            if routine not in self._routines:
+                self._routines.append(routine)
+                self._after_work_rs.append(PersonRoutineWithStatus(routine))
+
+    
     def _sync(self, sim_time: SimTime) -> None:
         super()._sync(sim_time)
 
-        for rws in self._during_work_rs + self._outside_work_rs:
+        for rws in self._during_work_rs + self._outside_work_rs + self._before_work_rs + self._after_work_rs:
             rws.sync(sim_time=sim_time, person_state=self.state)
 
     def step(self, sim_time: SimTime, contact_tracer: Optional[ContactTracer] = None) -> Optional[NoOP]:
@@ -97,10 +120,15 @@ class Worker(BasePerson):
             if not self.at_work and self.enter_location(self.work):
                 return None
         else:
-            # execute outside work time routines
-            ret = execute_routines(person=self, routines_with_status=self._outside_work_rs)
-            if ret != NOOP:
-                return ret
+            if sim_time in self._before_work_time:
+                ret = execute_routines(person=self, routines_with_status=self._before_work_rs)
+            elif sim_time in self._after_work_time:
+                    ret = execute_routines(person=self, routines_with_status=self._after_work_rs)
+            else:
+                # execute outside work time routines
+                ret = execute_routines(person=self, routines_with_status=self._outside_work_rs)
+                if ret != NOOP:
+                    return ret
 
             # no more routines to execute, go home
             if not self.at_home:

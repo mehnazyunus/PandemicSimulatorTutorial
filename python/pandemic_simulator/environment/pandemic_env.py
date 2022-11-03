@@ -99,9 +99,11 @@ class PandemicGymEnv(gym.Env):
                 RewardFunctionFactory.default(RewardFunctionType.LOWER_STAGE,
                                               num_stages=len(pandemic_regulations)),
                 RewardFunctionFactory.default(RewardFunctionType.SMOOTH_STAGE_CHANGES,
-                                              num_stages=len(pandemic_regulations))
+                                              num_stages=len(pandemic_regulations)),
+                RewardFunctionFactory.default(RewardFunctionType.UNLOCKED_BUSINESS_LOCATIONS,
+                                              num_stages=len(pandemic_regulations))                              
             ],
-            weights=[.4, 1, .1, 0.02]
+            weights=[.4, 1, .1, 0.02, .7]
         )
 
         return PandemicGymEnv(pandemic_sim=sim,
