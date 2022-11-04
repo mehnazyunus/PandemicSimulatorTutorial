@@ -120,10 +120,17 @@ class Worker(BasePerson):
             if not self.at_work and self.enter_location(self.work):
                 return None
         else:
-            if sim_time in self._before_work_time:
-                ret = execute_routines(person=self, routines_with_status=self._before_work_rs)
-            elif sim_time in self._after_work_time:
-                ret = execute_routines(person=self, routines_with_status=self._after_work_rs)
+            # use public transport only if worker is in social class 0
+            if self._social_class == 0:
+                if sim_time in self._before_work_time:
+                    ret = execute_routines(person=self, routines_with_status=self._before_work_rs)
+                elif sim_time in self._after_work_time:
+                    ret = execute_routines(person=self, routines_with_status=self._after_work_rs)
+                else:
+                    # execute outside work time routines
+                    ret = execute_routines(person=self, routines_with_status=self._outside_work_rs)
+                    if ret != NOOP:
+                        return ret
             else:
                 # execute outside work time routines
                 ret = execute_routines(person=self, routines_with_status=self._outside_work_rs)
