@@ -123,7 +123,7 @@ class Worker(BasePerson):
             if sim_time in self._before_work_time:
                 ret = execute_routines(person=self, routines_with_status=self._before_work_rs)
             elif sim_time in self._after_work_time:
-                    ret = execute_routines(person=self, routines_with_status=self._after_work_rs)
+                ret = execute_routines(person=self, routines_with_status=self._after_work_rs)
             else:
                 # execute outside work time routines
                 ret = execute_routines(person=self, routines_with_status=self._outside_work_rs)
