@@ -29,7 +29,8 @@ def get_us_age_distribution(num_persons: int) -> List[int]:
     return ages
 
 def get_us_socialclass_distribution(num_persons: int) -> List[int]:
-    social_classes = np.random.randint(low=2, size=num_persons)
+    #social_classes = np.random.randint(low=2, size=num_persons)
+    social_classes = np.random.binomial(n=1, p=0.1, size=num_persons)
     return social_classes
 
 def infection_risk(age: int) -> Risk:
@@ -88,10 +89,6 @@ def make_population(sim_config: PandemicSimConfig) -> List[Person]:
         all_homes = list(registry.location_ids_of_type(Home))
     numpy_rng.shuffle(all_homes)
     unassigned_homes = all_homes
-
-    def get_us_socialclass_distribution(num_persons: int) -> List[int]:
-        social_classes = np.random.randint(low=2, size=num_persons)
-        return social_classes
 
     social_classes = get_us_socialclass_distribution(sim_config.num_persons)
 
