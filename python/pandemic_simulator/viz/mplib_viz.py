@@ -3,6 +3,8 @@ import string
 from inspect import ismethod
 from typing import List, Any, Dict, Optional, Sequence, Type
 
+import pickle as pkl
+
 import numpy as np
 from cycler import cycler
 from matplotlib import pyplot as plt
@@ -171,6 +173,7 @@ class BaseMatplotLibViz(PandemicViz):
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
     
     def plot_by_class(self, ax: Optional[Axes] = None, **kwargs: Any) -> None:
+        output_path = "/home/sr/data/Personal/UTAustin/SEM_1/EthicalAI/PandemicSIM_Project/plots/trans_rate_0_2/"
         titles = ['critical', 'dead', 'infected', 'none', 'recovered']
         gis_0 = np.array(self._gis_0)
         gis_0 = np.vstack(gis_0).squeeze()
@@ -186,7 +189,14 @@ class BaseMatplotLibViz(PandemicViz):
             plt.xlabel('time (days)')
             plt.ylabel('persons')
             plt.legend()
-            plt.savefig("/home/sr/data/Personal/UTAustin/SEM_1/EthicalAI/PandemicSIM_Project/plots/trans_rate_e-1/" + titles[i] + ".png")
+            plt.savefig( output_path + titles[i] + ".png")
+        
+        data = {'gis_0': gis_0, 'gis_1': gis_1}
+        with open(output_path + 'data.pickle', 'wb') as f:
+            pkl.dump(data, f)
+        
+
+        
 
         # fig, ax = plt.subplots(5, 1)
         # for i in range(5):
