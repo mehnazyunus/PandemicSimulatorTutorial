@@ -169,6 +169,37 @@ class BaseMatplotLibViz(PandemicViz):
         ax.set_title('Stage')
         ax.set_xlabel('time (days)')
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+    
+    def plot_by_class(self, ax: Optional[Axes] = None, **kwargs: Any) -> None:
+        titles = ['critical', 'dead', 'infected', 'none', 'recovered']
+        gis_0 = np.array(self._gis_0)
+        gis_0 = np.vstack(gis_0).squeeze()
+        gis_1 = np.array(self._gis_1)
+        gis_1 = np.vstack(gis_1).squeeze()
+
+        for i in range(5):    
+            plt.figure()
+            plt.plot(gis_0[:, i], color='red', label='social_class = 0')
+            plt.plot(gis_1[:, i], color='blue', label='social_class = 1')
+            #plt.set_ylim(-0.1, self._num_persons + 1)
+            plt.title(titles[i])
+            plt.xlabel('time (days)')
+            plt.ylabel('persons')
+            plt.legend()
+            plt.savefig("/home/sr/data/Personal/UTAustin/SEM_1/EthicalAI/PandemicSIM_Project/plots/trans_rate_e-1/" + titles[i] + ".png")
+
+        # fig, ax = plt.subplots(5, 1)
+        # for i in range(5):
+            
+        #     ax[i].plot(gis_0[:, i], color='red', label='social_class = 0')
+        #     ax[i].plot(gis_1[:, i], color='blue', label='social_class = 1')
+        #     ax[i].set_ylim(-0.1, self._num_persons + 1)
+        #     ax[i].set_title(titles[i])
+        #     ax.set_xlabel('time (days)')
+        #     ax.set_ylabel('persons')
+        #     ax[i].legend()
+
+        # fig.show()
 
     @staticmethod
     def annotate_plot(ax: Axes, label: str) -> None:
