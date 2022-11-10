@@ -30,12 +30,6 @@ class PandemicSimState:
     global_infection_summary: Dict[InfectionSummary, int]
     """Specifies the number of people with each infection summary"""
 
-    global_infection_summary_0: Dict[InfectionSummary, int]
-    """Specifies the number of people with each infection summary"""
-    
-    global_infection_summary_1: Dict[InfectionSummary, int]
-    """Specifies the number of people with each infection summary"""
-
     global_testing_state: GlobalTestingState
     """Specifies the number of people with each infection summary after testing"""
 

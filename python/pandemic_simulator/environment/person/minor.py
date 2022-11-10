@@ -4,7 +4,7 @@ from typing import Optional, Sequence, List
 from .base import BasePerson
 from .routine_utils import execute_routines
 from ..interfaces import PersonRoutineWithStatus, PersonState, LocationID, SimTime, NoOP, SimTimeTuple, \
-    NOOP, PersonRoutine, ContactTracer, PersonID
+    NOOP, PersonRoutine, ContactTracer, PersonID, SocialClass
 
 __all__ = ['Minor']
 
@@ -21,6 +21,7 @@ class Minor(BasePerson):
     def __init__(self,
                  person_id: PersonID,
                  home: LocationID,
+                 social_class: SocialClass,
                  school: Optional[LocationID] = None,
                  school_time: Optional[SimTimeTuple] = None,
                  regulation_compliance_prob: float = 1.0,
@@ -41,6 +42,7 @@ class Minor(BasePerson):
 
         super().__init__(person_id=person_id,
                          home=home,
+                         social_class=social_class,
                          regulation_compliance_prob=regulation_compliance_prob,
                          init_state=init_state)
 

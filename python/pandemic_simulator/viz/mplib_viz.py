@@ -3,6 +3,8 @@ import string
 from inspect import ismethod
 from typing import List, Any, Dict, Optional, Sequence, Type
 
+import pickle as pkl
+
 import numpy as np
 from cycler import cycler
 from matplotlib import pyplot as plt
@@ -42,6 +44,8 @@ class BaseMatplotLibViz(PandemicViz):
     _ax_i: int
 
     _gis: List[np.ndarray]
+    _gis0: List[np.ndarray]
+    _gis1: List[np.ndarray]
     _gts: List[np.ndarray]
     _stages: List[np.ndarray]
     _rewards: List[float]
@@ -62,6 +66,8 @@ class BaseMatplotLibViz(PandemicViz):
         self._ax_i = 0
 
         self._gis = []
+        self._gis_0 = []
+        self._gis_1 = []
         self._gts = []
         self._stages = []
 
@@ -79,6 +85,8 @@ class BaseMatplotLibViz(PandemicViz):
             self._critical_index = self._gis_legend.index(InfectionSummary.CRITICAL.value)
 
         self._gis.append(obs.global_infection_summary)
+        self._gis_0.append(obs.global_infection_summary_0)
+        self._gis_1.append(obs.global_infection_summary_1)
         self._gts.append(obs.global_testing_summary)
         self._stages.append(obs.stage)
 
@@ -98,10 +106,36 @@ class BaseMatplotLibViz(PandemicViz):
     def plot_gis(self, ax: Optional[Axes] = None, **kwargs: Any) -> None:
         ax = ax or plt.gca()
         gis = np.vstack(self._gis).squeeze()
+        # gis_0 = np.vstack(self._gis_0).squeeze()
+        # gis_1 = np.vstack(self._gis_1).squeeze()
         ax.plot(gis)
+        # ax.plot(gis_0)
+        # ax.plot(gis_1)
         ax.legend(self._gis_legend, loc=1)
         ax.set_ylim(-0.1, self._num_persons + 1)
         ax.set_title('Global Infection Summary')
+        ax.set_xlabel('time (days)')
+        ax.set_ylabel('persons')
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+
+    def plot_gis_0(self, ax: Optional[Axes] = None, **kwargs: Any) -> None:
+        ax = ax or plt.gca()
+        gis_0 = np.vstack(self._gis_0).squeeze()
+        ax.plot(gis_0)
+        ax.legend(self._gis_legend, loc=1)
+        ax.set_ylim(-0.1, self._num_persons + 1)
+        ax.set_title('Global Infection Summary 0')
+        ax.set_xlabel('time (days)')
+        ax.set_ylabel('persons')
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+
+    def plot_gis_1(self, ax: Optional[Axes] = None, **kwargs: Any) -> None:
+        ax = ax or plt.gca()
+        gis_1 = np.vstack(self._gis_1).squeeze()
+        ax.plot(gis_1)
+        ax.legend(self._gis_legend, loc=1)
+        ax.set_ylim(-0.1, self._num_persons + 1)
+        ax.set_title('Global Infection Summary 1')
         ax.set_xlabel('time (days)')
         ax.set_ylabel('persons')
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
@@ -137,6 +171,45 @@ class BaseMatplotLibViz(PandemicViz):
         ax.set_title('Stage')
         ax.set_xlabel('time (days)')
         ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+    
+    def plot_by_class(self, ax: Optional[Axes] = None, **kwargs: Any) -> None:
+        output_path = "/home/sr/data/Personal/UTAustin/SEM_1/EthicalAI/PandemicSIM_Project/plots/trans_rate_0_2/"
+        titles = ['critical', 'dead', 'infected', 'none', 'recovered']
+        gis_0 = np.array(self._gis_0)
+        gis_0 = np.vstack(gis_0).squeeze()
+        gis_1 = np.array(self._gis_1)
+        gis_1 = np.vstack(gis_1).squeeze()
+
+        for i in range(5):    
+            plt.figure()
+            plt.plot(gis_0[:, i], color='red', label='social_class = 0')
+            plt.plot(gis_1[:, i], color='blue', label='social_class = 1')
+            #plt.set_ylim(-0.1, self._num_persons + 1)
+            plt.title(titles[i])
+            plt.xlabel('time (days)')
+            plt.ylabel('persons')
+            plt.legend()
+            plt.savefig( output_path + titles[i] + ".png")
+        
+        data = {'gis_0': gis_0, 'gis_1': gis_1}
+        with open(output_path + 'data.pickle', 'wb') as f:
+            pkl.dump(data, f)
+        
+
+        
+
+        # fig, ax = plt.subplots(5, 1)
+        # for i in range(5):
+            
+        #     ax[i].plot(gis_0[:, i], color='red', label='social_class = 0')
+        #     ax[i].plot(gis_1[:, i], color='blue', label='social_class = 1')
+        #     ax[i].set_ylim(-0.1, self._num_persons + 1)
+        #     ax[i].set_title(titles[i])
+        #     ax.set_xlabel('time (days)')
+        #     ax.set_ylabel('persons')
+        #     ax[i].legend()
+
+        # fig.show()
 
     @staticmethod
     def annotate_plot(ax: Axes, label: str) -> None:

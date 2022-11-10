@@ -5,7 +5,7 @@ from typing import Optional, Sequence, List
 from .base import BasePerson
 from .routine_utils import execute_routines
 from ..interfaces import LocationID, SimTime, NoOP, NOOP, PersonState, PersonRoutine, ContactTracer, PersonID, \
-    PersonRoutineWithStatus
+    PersonRoutineWithStatus, SocialClass
 
 __all__ = ['Retired']
 
@@ -19,6 +19,7 @@ class Retired(BasePerson):
     def __init__(self,
                  person_id: PersonID,
                  home: LocationID,
+                 social_class: SocialClass,
                  regulation_compliance_prob: float = 1.0,
                  init_state: Optional[PersonState] = None):
         """
@@ -32,6 +33,7 @@ class Retired(BasePerson):
 
         super().__init__(person_id=person_id,
                          home=home,
+                         social_class=social_class,
                          regulation_compliance_prob=regulation_compliance_prob,
                          init_state=init_state)
 

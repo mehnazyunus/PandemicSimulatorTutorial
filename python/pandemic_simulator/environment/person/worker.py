@@ -4,7 +4,7 @@ from typing import Optional, Sequence, List
 from .base import BasePerson
 from .routine_utils import execute_routines
 from ..interfaces import PersonState, LocationID, SimTime, NoOP, SimTimeTuple, NOOP, PersonRoutine, \
-    ContactTracer, PersonID, PersonRoutineWithStatus
+    ContactTracer, PersonID, PersonRoutineWithStatus, SocialClass
 
 __all__ = ['Worker']
 
@@ -26,6 +26,7 @@ class Worker(BasePerson):
     def __init__(self,
                  person_id: PersonID,
                  home: LocationID,
+                 social_class: SocialClass,
                  work: LocationID,
                  work_time: Optional[SimTimeTuple] = None,
                  regulation_compliance_prob: float = 1.0,
@@ -52,6 +53,7 @@ class Worker(BasePerson):
 
         super().__init__(person_id=person_id,
                          home=home,
+                         social_class=social_class,
                          regulation_compliance_prob=regulation_compliance_prob,
                          init_state=init_state)
 
@@ -118,10 +120,17 @@ class Worker(BasePerson):
             if not self.at_work and self.enter_location(self.work):
                 return None
         else:
-            if sim_time in self._before_work_time:
-                ret = execute_routines(person=self, routines_with_status=self._before_work_rs)
-            elif sim_time in self._after_work_time:
+            # use public transport only if worker is in social class 0
+            if self._social_class == 0:
+                if sim_time in self._before_work_time:
+                    ret = execute_routines(person=self, routines_with_status=self._before_work_rs)
+                elif sim_time in self._after_work_time:
                     ret = execute_routines(person=self, routines_with_status=self._after_work_rs)
+                else:
+                    # execute outside work time routines
+                    ret = execute_routines(person=self, routines_with_status=self._outside_work_rs)
+                    if ret != NOOP:
+                        return ret
             else:
                 # execute outside work time routines
                 ret = execute_routines(person=self, routines_with_status=self._outside_work_rs)

@@ -28,6 +28,10 @@ def get_us_age_distribution(num_persons: int) -> List[int]:
     # print(f'Average age: {np.average(ages)}')
     return ages
 
+def get_us_socialclass_distribution(num_persons: int) -> List[int]:
+    #social_classes = np.random.randint(low=2, size=num_persons)
+    social_classes = np.random.binomial(n=1, p=0.1, size=num_persons)
+    return social_classes
 
 def infection_risk(age: int) -> Risk:
     return cast(Risk,
@@ -82,9 +86,13 @@ def make_population(sim_config: PandemicSimConfig) -> List[Person]:
         else:
             retiree_ages.append(age)
 
-    all_homes = list(registry.location_ids_of_type(Home))
+        all_homes = list(registry.location_ids_of_type(Home))
     numpy_rng.shuffle(all_homes)
     unassigned_homes = all_homes
+
+    social_classes = get_us_socialclass_distribution(sim_config.num_persons)
+
+    home_social_class_mapping = {k:v for k, v in zip(unassigned_homes, social_classes)}
 
     # a) Select 6.5% of retirees (age > 65) and cluster them as groups of 1 or 2 and assign each
     # group to a nursing home.
@@ -99,6 +107,7 @@ def make_population(sim_config: PandemicSimConfig) -> List[Person]:
     for home, age in retiree_homes_ages:
         persons.append(Retired(person_id=PersonID(f'retired_{str(uuid4())}', age),
                                home=home,
+                               social_class = home_social_class_mapping[home],
                                regulation_compliance_prob=sim_config.regulation_compliance_prob,
                                init_state=PersonState(current_location=home, risk=infection_risk(age))))
 
@@ -113,6 +122,7 @@ def make_population(sim_config: PandemicSimConfig) -> List[Person]:
     for home, age in minor_homes_ages:
         persons.append(Minor(person_id=PersonID(f'minor_{str(uuid4())}', age),
                              home=home,
+                             social_class = home_social_class_mapping[home],
                              school=numpy_rng.choice(schools) if len(schools) > 0 else None,
                              regulation_compliance_prob=sim_config.regulation_compliance_prob,
                              init_state=PersonState(current_location=home, risk=infection_risk(age))))
@@ -148,6 +158,7 @@ def make_population(sim_config: PandemicSimConfig) -> List[Person]:
         assert work_package, 'Not enough available jobs, increase the capacity of certain businesses'
         persons.append(Worker(person_id=PersonID(f'worker_{str(uuid4())}', age),
                               home=home,
+                              social_class = home_social_class_mapping[home],
                               work=work_package.work,
                               work_time=work_package.work_time,
                               regulation_compliance_prob=sim_config.regulation_compliance_prob,
@@ -156,6 +167,7 @@ def make_population(sim_config: PandemicSimConfig) -> List[Person]:
     for home, age in non_nursing_homes_ages:
         persons.append(Retired(person_id=PersonID(f'retired_{str(uuid4())}', age),
                                home=home,
+                               social_class = home_social_class_mapping[home],
                                regulation_compliance_prob=sim_config.regulation_compliance_prob,
                                init_state=PersonState(current_location=home, risk=infection_risk(age))))
 

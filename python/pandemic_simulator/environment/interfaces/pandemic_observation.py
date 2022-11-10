@@ -18,6 +18,8 @@ class PandemicObservation:
     used by the reinforcement learning interface."""
 
     global_infection_summary: np.ndarray
+    global_infection_summary_0: np.ndarray
+    global_infection_summary_1: np.ndarray
     global_testing_summary: np.ndarray
     stage: np.ndarray
     infection_above_threshold: np.ndarray
@@ -37,6 +39,8 @@ class PandemicObservation:
         :return: an empty PandemicObservation instance
         """
         return PandemicObservation(global_infection_summary=np.zeros((history_size, 1, len(InfectionSummary))),
+                                    global_infection_summary_0=np.zeros((history_size, 1, len(InfectionSummary))),
+                                    global_infection_summary_1=np.zeros((history_size, 1, len(InfectionSummary))),
                                    global_testing_summary=np.zeros((history_size, 1, len(InfectionSummary))),
                                    stage=np.zeros((history_size, 1, 1)),
                                    infection_above_threshold=np.zeros((history_size, 1, 1)),
@@ -65,6 +69,10 @@ class PandemicObservation:
 
         gis = np.asarray([sim_state.global_infection_summary[k] for k in sorted_infection_summary])[None, None, ...]
         self.global_infection_summary[hist_index, 0] = gis
+        gis_0 = np.asarray([sim_state.global_infection_summary_0[k] for k in sorted_infection_summary])[None, None, ...]
+        self.global_infection_summary_0[hist_index, 0] = gis_0
+        gis_1 = np.asarray([sim_state.global_infection_summary_1[k] for k in sorted_infection_summary])[None, None, ...]
+        self.global_infection_summary_1[hist_index, 0] = gis_1
 
         gts = np.asarray([sim_state.global_testing_state.summary[k] for k in sorted_infection_summary])[None, None, ...]
         self.global_testing_summary[hist_index, 0] = gts
